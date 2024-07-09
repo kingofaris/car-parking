@@ -1,9 +1,13 @@
 from src.plugin_interface import PluginInterface
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QWidget, QMessageBox
+from PyQt6.QtCore import QTimer, Qt, QDateTime, QTime
 from src.models.model_apps import ModelApps
 from .ui_main import Ui_Form
 import cv2
+from datetime import datetime
+
+
 
 # from moildev import Moildev
 
@@ -41,7 +45,12 @@ class Controller(QWidget):
         self.yaw_out_m2= 0
         self.roll_out_m2 = 0
         self.zoom_out_m2 = 1
+
+        #Date and Time Variable
+        self.date_inf = None
+        self.time_inf = None
         self.set_stylesheet()
+        self.dateTime()
 
     def set_stylesheet(self):
         # This is set up style label on bonding box ui
@@ -54,10 +63,10 @@ class Controller(QWidget):
 
         #Label
         self.ui.vidio_fisheye.setStyleSheet(self.model.style_label())
-        # self.ui.vidio_pano.setStyleSheet(self.model.style_label())
         self.ui.vidio_gate_in.setStyleSheet(self.model.style_label())
         self.ui.vidio_gate_out.setStyleSheet(self.model.style_label())
-        self.ui.img_plate.setStyleSheet(self.model.style_label())
+        self.ui.plate.setStyleSheet(self.model.style_label())
+        self.ui.plate.setStyleSheet(self.model.style_label())
 
         #pushButton
         self.ui.btn_save.setStyleSheet(self.model.style_pushbutton())
@@ -66,28 +75,41 @@ class Controller(QWidget):
         self.ui.btn_params_cam.setStyleSheet(self.model.style_pushbutton())
         self.ui.btn_stop.setStyleSheet(self.model.style_pushbutton())
         self.ui.btn_record.setStyleSheet(self.model.style_pushbutton())
+        self.ui.pushButton_4.setStyleSheet(self.model.style_pushbutton())
+        self.ui.pushButton_5.setStyleSheet(self.model.style_pushbutton())
+        self.ui.pushButton_6.setStyleSheet(self.model.style_pushbutton())
+        self.ui.pushButton_7.setStyleSheet(self.model.style_pushbutton())
+        self.ui.pushButton_12.setStyleSheet(self.model.style_pushbutton())
+        self.ui.pushButton_13.setStyleSheet(self.model.style_pushbutton())
+        self.ui.pushButton_14.setStyleSheet(self.model.style_pushbutton())
+        self.ui.pushButton_15.setStyleSheet(self.model.style_pushbutton())
 
         #frame
         self.ui.frame_4.setStyleSheet(self.model.style_frame_main())
         self.ui.frame_3.setStyleSheet(self.model.style_frame_main())
+        self.ui.frame_8.setStyleSheet(self.model.style_frame_main())
+        self.ui.frame_11.setStyleSheet(self.model.style_frame_main())
+
+
 
         self.ui.frame_12.setStyleSheet(self.model.style_frame_object())
-        self.ui.frame_11.setStyleSheet(self.model.style_frame_object())
+        # self.ui.frame_11.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_10.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_5.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_6.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_7.setStyleSheet(self.model.style_frame_object())
-        self.ui.frame_8.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_9.setStyleSheet(self.model.style_frame_object())
-        self.ui.frame_11.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_12.setStyleSheet(self.model.style_frame_object())
+        self.ui.frame_15.setStyleSheet(self.model.style_frame_object())
+        self.ui.frame_28.setStyleSheet(self.model.style_frame_object())
+        self.ui.frame_29.setStyleSheet(self.model.style_frame_object())
 
 
         self.ui.line_9.setStyleSheet(self.model.style_line())
         self.ui.line_2.setStyleSheet(self.model.style_line())
         self.ui.line_6.setStyleSheet(self.model.style_line())
         # self.ui.line_4.setStyleSheet(self.model.style_line())
-        # self.ui.line_5.setStyleSheet(self.model.style_line())
+        self.ui.line_5.setStyleSheet(self.model.style_line())
 
         # self.ui.frame_14.setMaximumSize(QtCore.QSize(16777215, 23))
         self.ui.frame_mode1.setMaximumSize(QtCore.QSize(16777215, 23))
@@ -184,6 +206,10 @@ class Controller(QWidget):
         self.value_connect_maps_any_m1()
         self.value_connect_maps_any_m2()
 
+
+
+
+
     # def value_connect_pano(self):
     #     self.ui.spinBox_alpha_max.valueChanged.connect(lambda: self.value_change_pano(1))
     #     self.ui.spinBox_alpha_4.valueChanged.connect(lambda: self.value_change_pano(1))
@@ -220,6 +246,7 @@ class Controller(QWidget):
         self.ui.spinBox_x_7.valueChanged.connect(lambda: self.value_change_any_mode_2(2))
         self.ui.spinBox_x_8.valueChanged.connect(lambda: self.value_change_any_mode_2(2))
         self.ui.spinBox_4.valueChanged.connect(lambda value: self.img_rotate(self.img_gate_out, value, 2))
+
 
 
     def change_mode(self):
@@ -263,6 +290,10 @@ class Controller(QWidget):
         self.img_gate_out = self.img_fisheye.copy()
         self.moildev = self.model.connect_to_moildev(parameter_name)
 
+        '''Information section to show the cam_type and parameter_name'''
+        self.ui.label_info_media_type.setText(f": {cam_type}")
+        self.ui.label_info_parameter_used.setText(f": {parameter_name}")
+
         # self.value_change_pano(0)
         self.anypoint_m1()
         # self.anypoint_m2()
@@ -271,10 +302,9 @@ class Controller(QWidget):
 
     def showImg(self):
         # self.model.show_image_to_label(self.ui.vidio_pano, self.img_pano, 944)
-        self.model.show_image_to_label(self.ui.vidio_gate_in, self.img_gate_in, 480)
-        self.model.show_image_to_label(self.ui.vidio_gate_out, self.img_gate_out, 480)
-
-        self.model.show_image_to_label(self.ui.vidio_fisheye, self.img_fisheye, 280)
+        self.model.show_image_to_label(self.ui.vidio_gate_in, self.img_gate_in, 580)
+        self.model.show_image_to_label(self.ui.vidio_gate_out, self.img_gate_out, 580)
+        self.model.show_image_to_label(self.ui.vidio_fisheye, self.img_fisheye, 480)
 
     # def value_change_pano(self, status=1):
     #     if status == 1:
@@ -288,13 +318,13 @@ class Controller(QWidget):
     #
     #     rotate = self.ui.spinBox_rotate_4.value()
 
-        self.img_pano = self.img_fisheye.copy()
-
-        # self.pano_car()
-        # alpa max = bisa +/-, alpa = +/-, beta = +/-, left = +/-, right = -, top = -, button = -
-        self.img_pano = self.moildev.panorama_car(self.img_pano, self.pano_alpha_max, self.pano_alpha, self.pano_beta, self.pano_left, self.pano_right, self.pano_top, self.pano_buttom)
-        self.img_pano = cv2.resize(self.img_pano, (900,300))
-        self.img_rotate(self.img_pano, rotate, 3)
+        # self.img_pano = self.img_fisheye.copy()
+        #
+        # # self.pano_car()
+        # # alpa max = bisa +/-, alpa = +/-, beta = +/-, left = +/-, right = -, top = -, button = -
+        # self.img_pano = self.moildev.panorama_car(self.img_pano, self.pano_alpha_max, self.pano_alpha, self.pano_beta, self.pano_left, self.pano_right, self.pano_top, self.pano_buttom)
+        # self.img_pano = cv2.resize(self.img_pano, (900,300))
+        # self.img_rotate(self.img_pano, rotate, 3)
 
         # self.model.show_image_to_label(self.ui.vidio_pano, self.img_pano, 944)
         # self.img_rotate(self.img_pano, rotate, 3)
@@ -387,11 +417,24 @@ class Controller(QWidget):
             self.model.show_image_to_label(self.ui.vidio_gate_in, img, 480)
         elif status == 2:
             self.model.show_image_to_label(self.ui.vidio_gate_out, img, 480)
-        elif status == 3:
-            self.model.show_image_to_label(self.ui.vidio_pano, img, 944)
+        # elif status == 3:
+        #     self.model.show_image_to_label(self.ui.vidio_pano, img, 944)
 
+    #Information section
+    #Date and Time
+    def dateTime(self):
+        self.time_inf = QTimer()
+        self.time_inf.timeout.connect(self.updateTime)
+        self.time_inf.start(1000)
 
+    def updateTime(self):
+        time = datetime.now()
+        format_time = time.strftime("%H:%M:%S")
+        format_date = time.date()
+        self.ui.label_20.setText(f": {format_date} / {format_time}")
+        # self.ui.label_20.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+    # Camera Type, Parameter, and Soure
 
 
 class ParkingGateSystem(PluginInterface):
