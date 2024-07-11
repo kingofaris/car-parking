@@ -20,6 +20,8 @@ class Controller(QWidget):
         self.model_apps = ModelApps()
         # self.moildev = Moildev()
         self.img_fisheye = None
+        self.img_plate = None
+        self.img_plateExit = None
         self.img_pano = None
         self.img_gate_in = None
         self.img_gate_out = None
@@ -65,8 +67,10 @@ class Controller(QWidget):
         self.ui.vidio_fisheye.setStyleSheet(self.model.style_label())
         self.ui.vidio_gate_in.setStyleSheet(self.model.style_label())
         self.ui.vidio_gate_out.setStyleSheet(self.model.style_label())
-        self.ui.plate.setStyleSheet(self.model.style_label())
-        self.ui.plate.setStyleSheet(self.model.style_label())
+        # self.ui.plate_entry.setStyleSheet(self.model.style_label())
+        # self.ui.plate_exit.setStyleSheet(self.model.style_label())
+        self.ui.label_plaeEntry.setStyleSheet(self.model.style_label())
+        self.ui.label_plateExit.setStyleSheet(self.model.style_label())
 
         #pushButton
         self.ui.btn_save.setStyleSheet(self.model.style_pushbutton())
@@ -288,6 +292,8 @@ class Controller(QWidget):
         self.img_pano = self.img_fisheye.copy()
         self.img_gate_in = self.img_fisheye.copy()
         self.img_gate_out = self.img_fisheye.copy()
+        self.img_plate = self.img_fisheye.copy()
+        self.img_plateExit = self.img_fisheye.copy()
         self.moildev = self.model.connect_to_moildev(parameter_name)
 
         '''Information section to show the cam_type and parameter_name'''
@@ -302,9 +308,11 @@ class Controller(QWidget):
 
     def showImg(self):
         # self.model.show_image_to_label(self.ui.vidio_pano, self.img_pano, 944)
-        self.model.show_image_to_label(self.ui.vidio_gate_in, self.img_gate_in, 580)
-        self.model.show_image_to_label(self.ui.vidio_gate_out, self.img_gate_out, 580)
-        self.model.show_image_to_label(self.ui.vidio_fisheye, self.img_fisheye, 480)
+        self.model.show_image_to_label(self.ui.vidio_gate_in, self.img_gate_in, 880)
+        self.model.show_image_to_label(self.ui.vidio_gate_out, self.img_gate_out, 880)
+        self.model.show_image_to_label(self.ui.vidio_fisheye, self.img_fisheye, 280)
+        self.model.show_image_to_label(self.ui.label_plaeEntry, self.img_plate, 280)
+        self.model.show_image_to_label(self.ui.label_plateExit, self.img_plateExit, 280)
 
     # def value_change_pano(self, status=1):
     #     if status == 1:
@@ -414,9 +422,9 @@ class Controller(QWidget):
         if status == 0:
             return img
         elif status == 1:
-            self.model.show_image_to_label(self.ui.vidio_gate_in, img, 480)
+            self.model.show_image_to_label(self.ui.vidio_gate_in, img, 780)
         elif status == 2:
-            self.model.show_image_to_label(self.ui.vidio_gate_out, img, 480)
+            self.model.show_image_to_label(self.ui.vidio_gate_out, img, 780)
         # elif status == 3:
         #     self.model.show_image_to_label(self.ui.vidio_pano, img, 944)
 
@@ -429,9 +437,9 @@ class Controller(QWidget):
 
     def updateTime(self):
         time = datetime.now()
-        format_time = time.strftime("%H:%M:%S")
+        format_time = time.strftime("%H:%M")
         format_date = time.date()
-        self.ui.label_20.setText(f": {format_date} / {format_time}")
+        self.ui.label_20.setText(f": {format_date}/{format_time}")
         # self.ui.label_20.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     # Camera Type, Parameter, and Soure
