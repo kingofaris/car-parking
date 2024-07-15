@@ -42,11 +42,18 @@ class Controller(QWidget):
         self.pitch_in_m2 = -90
         self.yaw_in_m2 = 0
         self.roll_in_m2 = 0
-        self.zoom_in_m2 = 1
+        self.zoom_in_m2 = 2
         self.pitch_out_m2 = 90
         self.yaw_out_m2= 0
         self.roll_out_m2 = 0
         self.zoom_out_m2 = 1
+        # self.testing = cv2.imread("./plugins/moilapp-plugin-parking-gate-system/plate_mobil.jpeg")
+        #
+        #
+        # #
+        # self.model.show_image_to_label(self.ui.label_plaeEntry, self.testing, 280)
+        # self.model.show_image_to_label(self.ui.label_plateExit, self.testing, 280)
+
 
         #Date and Time Variable
         self.date_inf = None
@@ -67,8 +74,8 @@ class Controller(QWidget):
         self.ui.vidio_fisheye.setStyleSheet(self.model.style_label())
         self.ui.vidio_gate_in.setStyleSheet(self.model.style_label())
         self.ui.vidio_gate_out.setStyleSheet(self.model.style_label())
-        # self.ui.plate_entry.setStyleSheet(self.model.style_label())
-        # self.ui.plate_exit.setStyleSheet(self.model.style_label())
+        self.ui.plate_entry.setStyleSheet(self.model.style_label())
+        self.ui.plate_exit.setStyleSheet(self.model.style_label())
         self.ui.label_plaeEntry.setStyleSheet(self.model.style_label())
         self.ui.label_plateExit.setStyleSheet(self.model.style_label())
 
@@ -103,13 +110,13 @@ class Controller(QWidget):
         self.ui.frame_6.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_7.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_9.setStyleSheet(self.model.style_frame_object())
-        self.ui.frame_12.setStyleSheet(self.model.style_frame_object())
+        self.ui.frame_12.setStyleSheet(self.model.style_frame_object()) #ini beda
         self.ui.frame_15.setStyleSheet(self.model.style_frame_object())
-        self.ui.frame_28.setStyleSheet(self.model.style_frame_object())
+        self.ui.frame_36.setStyleSheet(self.model.style_frame_object())
         self.ui.frame_29.setStyleSheet(self.model.style_frame_object())
 
 
-        self.ui.line_9.setStyleSheet(self.model.style_line())
+        # self.ui.line_9.setStyleSheet(self.model.style_line())
         self.ui.line_2.setStyleSheet(self.model.style_line())
         self.ui.line_6.setStyleSheet(self.model.style_line())
         # self.ui.line_4.setStyleSheet(self.model.style_line())
@@ -190,15 +197,15 @@ class Controller(QWidget):
         self.ui.spinBox_x_8.setValue(self.zoom_out_m2)
         self.ui.spinBox_4.setValue(0)
 
-        self.ui.line_2.hide()
-        self.ui.line_6.hide()
-        # self.ui.frame_23.hide()
-        self.ui.frame_25.hide()
-        self.ui.frame_24.hide()
-        # self.ui.frame_mode1.hide()
-        # self.ui.frame_mode2.hide()
-        # self.ui.frame_mode1_2.hide()
-        # self.ui.frame_mode2_2.hide()
+        # self.ui.line_2.hide()
+        # self.ui.line_6.hide()
+        # # self.ui.frame_23.hide()
+        # self.ui.frame_25.hide()
+        # self.ui.frame_24.hide()
+        self.ui.frame_mode1.hide()
+        self.ui.frame_mode2.hide()
+        self.ui.frame_mode1_2.hide()
+        self.ui.frame_mode2_2.hide()
 
         self.ui.btn_radio_hidden.toggled.connect(self.change_mode)
         self.ui.btn_radio_mode1.toggled.connect(self.change_mode)
@@ -308,11 +315,14 @@ class Controller(QWidget):
 
     def showImg(self):
         # self.model.show_image_to_label(self.ui.vidio_pano, self.img_pano, 944)
-        self.model.show_image_to_label(self.ui.vidio_gate_in, self.img_gate_in, 880)
-        self.model.show_image_to_label(self.ui.vidio_gate_out, self.img_gate_out, 880)
-        self.model.show_image_to_label(self.ui.vidio_fisheye, self.img_fisheye, 280)
-        self.model.show_image_to_label(self.ui.label_plaeEntry, self.img_plate, 280)
-        self.model.show_image_to_label(self.ui.label_plateExit, self.img_plateExit, 280)
+        self.model.show_image_to_label(self.ui.vidio_gate_in, self.img_gate_in, 480)
+        self.model.show_image_to_label(self.ui.vidio_gate_out, self.img_gate_out, 480)
+        self.model.show_image_to_label(self.ui.vidio_fisheye, self.img_fisheye, 300)
+        # cv2.imwrite("gambar_gate_in.jpeg" ,self.img_gate_in)
+        # cv2.imwrite("gambar_gate_out.jpeg", self.img_gate_out)
+
+        # self.model.show_image_to_label(self.ui.label_plaeEntry, self.img_plate, 280)
+        # self.model.show_image_to_label(self.ui.label_plateExit, self.img_plateExit, 280)
 
     # def value_change_pano(self, status=1):
     #     if status == 1:
@@ -404,6 +414,7 @@ class Controller(QWidget):
         map_x, map_y = self.moildev.maps_anypoint_mode2(pitch, yaw, roll, zoom)
         img = cv2.remap(img, map_x, map_y, cv2.INTER_CUBIC)
 
+
         if status == 1:
             self.img_gate_in = img
             self.img_rotate(img, rotate, 1)
@@ -423,6 +434,7 @@ class Controller(QWidget):
             return img
         elif status == 1:
             self.model.show_image_to_label(self.ui.vidio_gate_in, img, 780)
+
         elif status == 2:
             self.model.show_image_to_label(self.ui.vidio_gate_out, img, 780)
         # elif status == 3:
